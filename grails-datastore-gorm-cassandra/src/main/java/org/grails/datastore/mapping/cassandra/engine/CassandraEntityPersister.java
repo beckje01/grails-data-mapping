@@ -212,6 +212,8 @@ Possible other way
 
 	private Object convertToCassandraType(Object object) {
 		//TODO refactor into extensible approach with custom types ala hibernate
+        //If the incoming object is a list of enums, this method will return
+        //the object unaltered, causing problems further down the line
 		if (object == null) {
 			return null;
 		}

@@ -52,7 +52,7 @@ public class CassandraAssociationIndexer implements AssociationIndexer {
 	public List query(Object primaryKey) {
 		// for a unidirectional one-to-many we use the embedded keys
 		if (!association.isBidirectional()) {
-			final Object keys = nativeEntry.get(association.getName());
+			final Object keys = nativeEntry.get(association.getName().toLowerCase());
 			if (!(keys instanceof Collection)) {
 				return Collections.emptyList();
 			}
