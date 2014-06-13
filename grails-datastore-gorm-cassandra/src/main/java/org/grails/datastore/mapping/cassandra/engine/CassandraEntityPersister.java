@@ -303,27 +303,27 @@ Possible other way
 			DataType dt = definition.getType();
 			ByteBuffer columnUnsafeBytes = row.getBytesUnsafe(columnName);
 			Object o = null;
-			if (columnUnsafeBytes != null) {
-				o = dt.deserialize(columnUnsafeBytes);
-			}
 
 			log.debug(columnName + ">" + dt.getName() + ": " + dt.getName().equals(DataType.Name.BLOB));
+            if (columnUnsafeBytes != null){
+                if (dt.getName().equals(DataType.Name.BLOB)) {
 
-			if (dt.getName().equals(DataType.Name.BLOB)) {
-
-				try {
-					ByteBuffer bb = row.getBytes(columnName);
-					byte[] result = new byte[bb.remaining()];
-					bb.get(result);
-					ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(result);
-					ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
-					o = ois.readObject();
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				}
-			}
+                    try {
+                        byte[] result = new byte[columnUnsafeBytes.remaining()];
+                        columnUnsafeBytes.get(result);
+                        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(result);
+                        ObjectInputStream ois = new ObjectInputStream(byteArrayInputStream);
+                        o = ois.readObject();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    o = dt.deserialize(columnUnsafeBytes);
+                }
+            }
 			entry.put(columnName, o);
 		}
 
