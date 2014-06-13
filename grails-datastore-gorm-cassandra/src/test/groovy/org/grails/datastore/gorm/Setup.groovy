@@ -110,7 +110,13 @@ class Setup {
 			if (prop instanceof ToOne) {
 				ToOne toOne = (ToOne)prop
 				propDef = "${propName} ${getCassandraType(toOne.associatedEntity.identity.getType())}"
-			} else if (prop instanceof OneToMany || prop instanceof ManyToMany) {} else {
+			} else if (prop instanceof OneToMany ) {
+				OneToMany oneToMany = (OneToMany) prop
+				def idType = getCassandraType(oneToMany.getAssociatedEntity().getIdentity().getType())
+				propDef = "${propName} List<${idType}>"
+			} else if (prop instanceof ManyToMany){
+				//TODO something here eventually
+			} else {
 				propDef = "${propName} ${getCassandraType(prop.getType())}"
 			}
 			if (prop.mapping.mappedForm.isIndex()) {
@@ -120,10 +126,12 @@ class Setup {
 		}
 		createTable += props.findAll().join(",") + ");"
 
+//		println "CREATE Table: " + createTable
+
 		catchException { nativeSession.execute(truncateTable); println truncateTable; }
-		//catchException { nativeSession.execute(dropTable); println dropTable }
-		catchException { nativeSession.execute(createTable); println createTable }
-		createIndices.each { createIndex -> catchException { nativeSession.execute(createIndex); println createIndex; } }
+//		catchException { nativeSession.execute(dropTable); println dropTable }
+//		catchException { nativeSession.execute(createTable); println createTable }
+//		createIndices.each { createIndex -> catchException { nativeSession.execute(createIndex); println createIndex; } }
 
 	}
 

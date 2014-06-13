@@ -5,6 +5,7 @@ import org.grails.datastore.mapping.cassandra.uuid.UUIDUtil
 import org.grails.datastore.mapping.core.Session
 import org.springframework.context.ApplicationEvent
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.context.support.GenericApplicationContext
 
 /**
  * @author Graeme Rocher
@@ -14,7 +15,12 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
 
 	@Test
 	void testReadWrite() {
-		def ds = new CassandraDatastore()
+		def ctx = new GenericApplicationContext()
+		ctx.refresh()
+
+		ConfigObject config = new ConfigObject()
+		config.put("contactPoints", "jeff-cassandra.dev.wh.reachlocal.com")
+		def ds = new CassandraDatastore(new CassandraMappingContext(CassandraDatastore.DEFAULT_KEYSPACE), ctx, config)
 
 		ds.mappingContext.addPersistentEntity(TestEntity)
 		Session conn = ds.connect(null)
@@ -55,7 +61,7 @@ class CassandraEntityPersisterTest extends AbstractCassandraTest {
 
 		assert 55 == t.age
 
-		def uuid =  t.id
+		def uuid = t.id
 		conn.delete(t)
 		conn.flush()
 

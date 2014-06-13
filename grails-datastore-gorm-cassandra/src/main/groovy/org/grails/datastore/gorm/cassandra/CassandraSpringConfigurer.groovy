@@ -36,7 +36,7 @@ class CassandraSpringConfigurer extends SpringConfigurer {
 
 			cassandraMappingContext(CassandraMappingContextFactoryBean) {
 				grailsApplication = ref('grailsApplication')
-				pluginManager = ref('pluginManager')
+//				pluginManager = ref('pluginManager')
 				config = cassandraConfig
 			}
 
