@@ -211,14 +211,31 @@ Possible other way
 	}
 
 	private Object convertToCassandraType(Object object) {
-		//TODO refactor into extensible approach with custom types ala hibernate
-        //If the incoming object is a list of enums, this method will return
-        //the object unaltered, causing problems further down the line
+        //Convert object to Cassandra compatible type. If the object is a collection,
+        //convert each item in the collection to a compatible type.
+
 		if (object == null) {
 			return null;
 		}
-		Class clazz = object.getClass();
 
+        Object o = null;
+
+        if (object instanceof Collection) {
+            Collection c = Collection.class.cast(object);
+            ArrayList<Object> list = new ArrayList<Object>();
+            for (Object element : c) {
+                element = convertByType(element);
+                list.add(element);
+            }
+            o = list;
+        } else {
+            o = convertByType(object);
+        }
+        return o;
+    }
+
+    private Object convertByType(Object object) {
+        Class clazz = object.getClass();
 		Object o = object;
 		if (clazz == byte[].class) {
 			o = ByteBuffer.wrap((byte[])object);
